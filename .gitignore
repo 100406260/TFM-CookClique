@@ -1,0 +1,15 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Entornos
+.env
+
+# Node (cuando hagas frontend con React)
+node_modules/
+dist/
+build/
+
+# Sistema
+.DS_Store
