@@ -1,1 +1,27 @@
+/* src/index.css */
+
+/* Activa Tailwind v4 */
 @import "tailwindcss";
+
+/* Reset y base mínimos */
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body { margin: 0; }
+
+/* Fondo global (emerald-50) para que se note a simple vista */
+body { background: #f0fdf4; }
+
+/* Utilidades personalizadas (v4 usa @utility) */
+@utility line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+@utility line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}

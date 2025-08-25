@@ -3,7 +3,6 @@ const api = axios.create({ baseURL: import.meta.env.VITE_API_URL });
 import type { RecipeDetail } from "./types";
 export default api;
 
-// --- comments ---
 export async function fetchComments(recipeId: string) {
   const { data } = await api.get(`/comments/by-recipe/${recipeId}`);
   return data as import("./types").Comment[];
@@ -21,3 +20,4 @@ export async function fetchRecipeDetail(recipeId: string, viewerId?: string) {
   });
   return data as RecipeDetail;
 }
+
