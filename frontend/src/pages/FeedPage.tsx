@@ -10,7 +10,7 @@ export default function FeedPage() {
     (async () => {
       const res = await fetch(
         "http://127.0.0.1:8000/feed/11111111-1111-1111-1111-111111111111?limit=12&offset=0"
-      );
+      )
       const data: FeedResponse | FeedItem[] = await res.json();
       setItems(Array.isArray(data) ? data : data.items);
     })();
