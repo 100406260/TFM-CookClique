@@ -9,7 +9,7 @@ html, body, #root { height: 100%; }
 body { margin: 0; }
 
 /* Fondo global (emerald-50) para que se note a simple vista */
-body { background: #f0fdf4; }
+body { background: #87dfa1; }
 
 /* Utilidades personalizadas (v4 usa @utility) */
 @utility line-clamp-1 {
