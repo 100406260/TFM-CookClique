@@ -1,6 +1,7 @@
 // src/pages/RecipePage.tsx
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { API_BASE_URL } from "../api";
 import type { RecipeDetail } from "../types";
 
 export default function RecipePage() {
@@ -20,13 +21,14 @@ export default function RecipePage() {
         setLoading(true);
         setErr(null);
         const res = await fetch(
-          `http://127.0.0.1:8000/recipes/${id}/detail?viewer_id=11111111-1111-1111-1111-111111111111;`
+          `${API_BASE_URL}/recipes/${id}/detail?viewer_id=11111111-1111-1111-1111-111111111111`
         );
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json: RecipeDetail = await res.json();
         setData(json);
-      } catch (e: any) {
-        setErr(e?.message ?? "Error desconocido");
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "Error desconocido";
+        setErr(msg);
       } finally {
         setLoading(false);
       }

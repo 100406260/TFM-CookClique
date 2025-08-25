@@ -1,3 +1,4 @@
+import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Layout from "./components/Layout";
 import FeedPage from "./pages/FeedPage";
@@ -13,7 +14,7 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       { index: true, element: <FeedPage /> },
-      { path: "recipe/:id", element: <RecipePage/> }, //TODO: cambiar el userID
+      { path: "recipe/:id", element: <RecipePage /> }, //TODO: cambiar el userID
       { path: "profile/:username", element: <ProfilePage /> },
       { path: "search", element: <SearchPage /> },
       { path: "edamam", element: <EdamamPage /> },
@@ -21,6 +22,6 @@ const router = createBrowserRouter([
   },
 ]);
 
-export default function App() {
-  return <RouterProvider router={router} />;
-}
+createRoot(document.getElementById("root")!).render(
+  <RouterProvider router={router} />
+);
