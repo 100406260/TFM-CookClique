@@ -1,81 +1,118 @@
-import { Link } from "react-router-dom";
-import type { Author } from "../types";
+import { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { fetchRecipeDetail } from "../api";
+import type { RecipeDetail as RecipeDetailType } from "../types";
 
-type Props = {
-  item: {
-    id: string;
-    title: string;
-    description: string | null;
-    image_url: string | null;
-    created_at: string;
-    author: Author;
-    likes_count: number;
-    comments_count: number;
-    is_liked_by_me: boolean;
-  };
-};
+export default function RecipeDetail() {
+  const { id } = useParams<{ id: string }>();
+  const [data, setData] = useState<RecipeDetailType | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-export default function RecipeCard({ item }: Props) {
+  useEffect(() => {
+    if (!id) return;
+    setLoading(true);
+    setError(null);
+    fetchRecipeDetail(id)
+      .then((json) => {
+        console.log("RecipeDetail JSON:", json); // 👈 mira en consola que trae datos
+        setData(json);
+      })
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (!id) return <div className="p-6 text-red-600">Falta el ID de receta.</div>;
+  if (loading) return <div className="p-6">Cargando receta…</div>;
+  if (error) return <div className="p-6 text-red-600">Error: {error}</div>;
+  if (!data) return <div className="p-6">Sin datos.</div>;
+
+  // OJO: si no usas el mapeo camelCase, las claves son snake_case (image_url, likes_count, etc.)
+  const img = (data as any).image_url; // evita undefined si mantuviste snake_case
+
   return (
-    <article className="overflow-hidden rounded-2xl border bg-white shadow-sm">
-      {/* Header */}
-      <div className="flex items-center gap-3 p-4">
-        <div className="h-10 w-10 overflow-hidden rounded-full bg-gray-200">
-          {item.author.avatar ? (
-            <img
-              src={item.author.avatar}
-              alt={item.author.username}
-              className="h-full w-full object-cover"
-            />
-          ) : null}
+    <div className="min-h-screen bg-background">
+      <header className="border-b">
+        <div className="max-w-5xl mx-auto p-4 flex items-center gap-3">
+          <Link to="/" className="text-sm text-muted-foreground hover:underline">← Volver</Link>
+          <h1 className="text-xl font-semibold">Detalle de receta</h1>
         </div>
-        <div className="min-w-0">
-          <Link
-            to={`/profile/${item.author.id}`}
-            className="block truncate text-sm font-semibold hover:underline"
-          >
-            {item.author.username}
-          </Link>
-          <time className="block text-xs text-gray-500">
-            {new Date(item.created_at).toLocaleString()}
-          </time>
-        </div>
-      </div>
+      </header>
 
-      {/* Imagen con ratio fijo */}
-      {item.image_url && (
-        <Link to={`/recipes/${item.id}`} className="block">
-          <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-100">
-            <img
-              src={item.image_url}
-              alt={item.title}
-              className="absolute inset-0 h-full w-full object-cover"
-              loading="lazy"
-            />
+      <main className="max-w-5xl mx-auto p-4">
+        <article className="bg-white dark:bg-neutral-900 rounded-2xl shadow p-5 grid md:grid-cols-2 gap-6">
+          <div className="aspect-[4/3] w-full overflow-hidden rounded-xl border">
+            {img ? (
+              <img src={img} alt={data.title} className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full grid place-items-center text-sm text-muted-foreground">
+                Sin imagen
+              </div>
+            )}
           </div>
-        </Link>
-      )}
 
-      {/* Body */}
-      <div className="space-y-2 p-4">
-        <Link
-          to={`/recipes/${item.id}`}
-          className="line-clamp-1 text-lg font-semibold hover:underline"
-        >
-          {item.title}
-        </Link>
-        {item.description && (
-          <p className="line-clamp-2 text-sm text-gray-700">
-            {item.description}
-          </p>
-        )}
+          <div className="flex flex-col gap-4">
+            <div>
+              <h2 className="text-2xl font-bold">{data.title}</h2>
+              <p className="text-muted-foreground mt-1">{data.description}</p>
+            </div>
 
-        <div className="mt-3 flex items-center gap-4 text-sm text-gray-600">
-          <span>❤️ {item.likes_count}</span>
-          <span>💬 {item.comments_count}</span>
-          {item.is_liked_by_me && <span className="text-pink-600">• Te gusta</span>}
-        </div>
-      </div>
-    </article>
+            <div className="flex items-center gap-6 text-sm">
+              <div>❤️ {(data as any).likes_count}</div>
+              <div>💬 {(data as any).comments_count}</div>
+              <div>👀 {(data as any).is_liked_by_me ? "Te gusta" : "No te gusta"}</div>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-2">Autor</h3>
+              <div className="flex items-center gap-3">
+                {data.author.avatar ? (
+                  <img
+                    src={data.author.avatar}
+                    alt={data.author.username}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-muted grid place-items-center">👤</div>
+                )}
+                <span className="font-medium">@{data.author.username}</span>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-2">Ingredientes</h3>
+              <ul className="list-disc list-inside space-y-1">
+                {data.ingredients.map((ing) => (
+                  <li key={ing.id}>
+                    <span className="font-medium">{ing.name}</span>
+                    {ing.quantity ? ` — ${ing.quantity}` : null}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-semibold mb-2">Pasos</h3>
+              <ol className="list-decimal list-inside space-y-1">
+                {data.steps
+                  .slice()
+                  .sort((a, b) => a.position - b.position)
+                  .map((s) => (
+                    <li key={s.id}>{s.text}</li>
+                  ))}
+              </ol>
+            </div>
+
+            {(data as any).tags?.length ? (
+              <div className="flex flex-wrap gap-2">
+                {(data as any).tags.map((t: string) => (
+                  <span key={t} className="px-2 py-1 text-xs rounded-full border bg-muted">{t}</span>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        </article>
+      </main>
+    </div>
   );
 }

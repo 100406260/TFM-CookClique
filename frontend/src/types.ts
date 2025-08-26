@@ -22,6 +22,7 @@ export type Ingredient = {
   id: UUID;
   name: string;
   quantity: string | null;
+  unit: string | null;
 };
 
 export type Step = {
@@ -41,7 +42,7 @@ export type RecipeDetail = {
   id: UUID;
   title: string;
   description: string | null;
-  image_url: string | null;
+  image_url?: string | null;
   created_at: string;
   author: Author;
   likes_count: number;

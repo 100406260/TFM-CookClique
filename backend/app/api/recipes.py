@@ -61,7 +61,7 @@ def recipe_detail(
         image_url=recipe.image_url,
         created_at=recipe.created_at,
         author=AuthorMini(id=author.id, username=author.username, profile_picture_url=author.profile_picture_url),
-        ingredients=[IngredientOut(id=i.id, name=i.name, quantity=getattr(i, "quantity", None)) for i in ing_rows],
+        ingredients=[IngredientOut(id=i.id, name=i.name, quantity=getattr(i, "quantity", None), unit=getattr(i, "unit", None)) for i in ing_rows],
         tags=[TagOut(id=t.id, name=t.name) for t in tag_rows],
         likes_count=int(likes_count),
         comments_count=int(comments_count),

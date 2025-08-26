@@ -12,7 +12,8 @@ class IngredientOut(BaseModel):
     id: uuid.UUID
     name: str
     quantity: Optional[str] = None
-
+    unit: Optional[str] = None
+    
     model_config = ConfigDict(from_attributes=True)
 
 class TagOut(BaseModel):
