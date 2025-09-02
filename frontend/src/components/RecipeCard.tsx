@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { fetchRecipeDetail } from "../api";
 import type { RecipeDetail as RecipeDetailType } from "../types";
 
-export default function RecipeDetail() {
+export default function RecipeCard() {
   const { id } = useParams<{ id: string }>();
   const [data, setData] = useState<RecipeDetailType | null>(null);
   const [loading, setLoading] = useState(true);
@@ -15,7 +15,7 @@ export default function RecipeDetail() {
     setError(null);
     fetchRecipeDetail(id)
       .then((json) => {
-        console.log("RecipeDetail JSON:", json); // 👈 mira en consola que trae datos
+        console.log("RecipeDetail JSON:", json);
         setData(json);
       })
       .catch((e) => setError(e.message))
@@ -27,8 +27,7 @@ export default function RecipeDetail() {
   if (error) return <div className="p-6 text-red-600">Error: {error}</div>;
   if (!data) return <div className="p-6">Sin datos.</div>;
 
-  // OJO: si no usas el mapeo camelCase, las claves son snake_case (image_url, likes_count, etc.)
-  const img = (data as any).image_url; // evita undefined si mantuviste snake_case
+  const img = (data as any).image_url; 
 
   return (
     <div className="min-h-screen bg-background">

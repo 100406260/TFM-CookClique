@@ -11,7 +11,7 @@ pwd_ctx = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 @router.post("/", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def create_user(payload: UserCreate, db: Session = Depends(get_db)):
-    # ¿existe username o email?
+
     if db.query(User).filter(User.username == payload.username).first():
         raise HTTPException(status_code=400, detail="username ya existe")
     if db.query(User).filter(User.email == payload.email).first():

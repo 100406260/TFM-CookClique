@@ -6,4 +6,5 @@ from .feed import router as feed_router
 from .likes import router as likes_router
 from .comments import router as comments_router
 from .recipes import router as recipes_router
+from .auth import router as auth_router
 

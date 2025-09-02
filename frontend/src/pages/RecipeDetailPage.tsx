@@ -23,7 +23,7 @@ export default function RecipePage() {
           `http://127.0.0.1:8000/recipes/${id}/detail?viewer_id=11111111-1111-1111-1111-111111111111`
         )
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        console.log("entra en recipe detail page");
+        console.log(res);
         const json: RecipeDetail = await res.json();
         setData(json);
       } catch (e: any) {
@@ -37,6 +37,7 @@ export default function RecipePage() {
   if (loading) return <div className="mx-auto max-w-3xl">Cargando…</div>;
   if (err) return <div className="mx-auto max-w-3xl text-red-700">Error: {err}</div>;
   if (!data) return null;
+  console.log(data)
 
 return (
   <article className="mx-auto max-w-3xl space-y-6 p-4">

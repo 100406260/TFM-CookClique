@@ -5,5 +5,5 @@ from .tag import TagCreate, TagResponse
 from .feed import FeedItem, FeedAuthor
 from .like import LikeToggle, LikeInfo
 from .comment import CommentCreate, CommentResponse
-from .recipe_detail import RecipeDetail, IngredientOut, TagOut, AuthorMini
+from .recipe_detail import RecipeDetail, IngredientOut, TagOut, AuthorMini, CommentOut, CommentAuthor
 

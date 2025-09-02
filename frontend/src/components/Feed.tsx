@@ -72,7 +72,7 @@ export default function Feed({ defaultUserId }: { defaultUserId: string }) {
 
       <div className="grid gap-6 [grid-template-columns:repeat(auto-fill,minmax(280px,1fr))]">
         {items.map((it) => (
-          <RecipeCard key={it.id} item={it} />
+          <RecipeCard key={it.id} />
         ))}
       </div>
 

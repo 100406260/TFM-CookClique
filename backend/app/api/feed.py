@@ -15,7 +15,6 @@ def get_feed(
     limit: int = Query(20, ge=1, le=100),
     offset: int = Query(0, ge=0),
 ):
-    # seguidos + yo
     followed_q = select(Follow.followed_id).where(Follow.follower_id == user_id)
     ids_subq = union_all(
         followed_q,
@@ -24,7 +23,6 @@ def get_feed(
 
     U = aliased(User)
 
-    # agregados por receta
     likes_sub = (
         db.query(
             RecipeLike.recipe_id.label("rid"),
@@ -43,7 +41,6 @@ def get_feed(
         .subquery()
     )
 
-    # EXISTS: ¿lo ha likeado este usuario?
     liked_exists = exists().where(
         (RecipeLike.user_id == user_id) & (RecipeLike.recipe_id == Recipe.id)
     )

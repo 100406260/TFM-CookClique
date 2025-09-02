@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .api import users_router, recipes_router, ingredients_router, tags_router, feed_router, likes_router, comments_router
+from .api import users_router, recipes_router, ingredients_router, tags_router, feed_router, likes_router, comments_router, auth_router
 
 app = FastAPI(title="Recetas API")
 
@@ -19,6 +19,7 @@ app.include_router(tags_router)
 app.include_router(feed_router)
 app.include_router(likes_router)
 app.include_router(comments_router)
+app.include_router(auth_router)
 
 @app.get("/")
 def root():

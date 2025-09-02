@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func, exists
 from ..db import get_db
 from ..models import Recipe, User, RecipeLike, RecipeComment, Ingredient, Tag
-from ..schemas import RecipeDetail, AuthorMini, IngredientOut, TagOut
+from ..schemas import RecipeDetail, AuthorMini, IngredientOut, TagOut, CommentOut, CommentAuthor
 
 router = APIRouter(prefix="/recipes", tags=["recipes"])
 
@@ -13,7 +13,7 @@ def recipe_detail(
     db: Session = Depends(get_db),
     viewer_id: str | None = Query(None, description="UUID del usuario que ve (para saber si likeó)")
 ):
-    # receta + autor
+
     r = (
         db.query(Recipe, User)
         .join(User, User.id == Recipe.user_id)
@@ -24,7 +24,6 @@ def recipe_detail(
         raise HTTPException(status_code=404, detail="Receta no encontrada")
     recipe, author = r
 
-    # ingredientes (si los tienes en tabla ingredients con recipe_id)
     ing_rows = (
         db.query(Ingredient)
         .filter(Ingredient.recipe_id == recipe.id)
@@ -32,13 +31,19 @@ def recipe_detail(
         .all()
     )
 
-    # tags (si tienes una tabla pivot recipe_tags; si no, sáltalo o ajusta)
+    comments_rows = (
+        db.query(RecipeComment, User)
+        .join(User, User.id == RecipeComment.user_id)
+        .filter(RecipeComment.recipe_id == recipe.id)
+        .order_by(RecipeComment.created_at.asc())
+        .all()
+    )
+
     try:
-        from ..models.recipe_tag import RecipeTag  # si la tuvieras
         tag_rows = (
             db.query(Tag)
-            .join(RecipeTag, RecipeTag.tag_id == Tag.id)
-            .filter(RecipeTag.recipe_id == recipe.id)
+            .join(Tag, Tag.tag_id == Tag.id)
+            .filter(Tag.recipe_id == recipe.id)
             .order_by(Tag.name.asc())
             .all()
         )
@@ -62,6 +67,7 @@ def recipe_detail(
         created_at=recipe.created_at,
         author=AuthorMini(id=author.id, username=author.username, profile_picture_url=author.profile_picture_url),
         ingredients=[IngredientOut(id=i.id, name=i.name, quantity=getattr(i, "quantity", None), unit=getattr(i, "unit", None)) for i in ing_rows],
+        comments = [CommentOut(id=c.id, content=c.content, created_at=c.created_at, author=CommentAuthor(id=u.id,username=u.username,profile_picture_url=u.profile_picture_url)) for (c, u) in comments_rows],
         tags=[TagOut(id=t.id, name=t.name) for t in tag_rows],
         likes_count=int(likes_count),
         comments_count=int(comments_count),

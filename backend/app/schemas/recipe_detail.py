@@ -16,6 +16,21 @@ class IngredientOut(BaseModel):
     
     model_config = ConfigDict(from_attributes=True)
 
+
+class CommentAuthor(BaseModel):
+    id: uuid.UUID
+    username: str
+    profile_picture_url: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+class CommentOut(BaseModel):
+    id: uuid.UUID
+    content: str
+    created_at: datetime
+    author: CommentAuthor
+
+    model_config = ConfigDict(from_attributes=True)
 class TagOut(BaseModel):
     id: uuid.UUID
     name: str
@@ -30,6 +45,7 @@ class RecipeDetail(BaseModel):
     created_at: datetime
     author: AuthorMini
     ingredients: List[IngredientOut] = []
+    comments: List[CommentOut] = []
     tags: List[TagOut] = []
     likes_count: int = 0
     comments_count: int = 0
